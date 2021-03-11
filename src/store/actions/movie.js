@@ -11,6 +11,13 @@ const addMovies = (payload) => {
   }
 }
 
+const addSimilarMovies = (payload) => {
+  return {
+    type: "ADD_SIMILAR_MOVIES",
+    payload
+  }
+}
+
 const changeMovie = (payload) => {
   return {
     type: "CHANGE_MOVIE",
@@ -22,7 +29,6 @@ export const fetchMovies = () => {
   return async (dispatch, getState) => {
     try {
       const { page } = getState().movie
-      console.log(page);
       const { data: movies } = await axios({
         url: `${baseUrl}/movie/now_playing?api_key=${apiKey}&page=${page}`
       })
@@ -36,11 +42,26 @@ export const fetchMovies = () => {
 export const getMovieById = (id) => {
   return async (dispatch, getState) => {
     try {
-      const { movies } = getState().movie
-      const movie = movies.filter((movie => movie.id === id))
+      const { movies, similarMovies } = getState().movie
+      let movie = []
+      movie = movies.filter((movie => movie.id === id))
+      if(movie.length === 0) movie = similarMovies.filter((movie => movie.id === id))
       dispatch(changeMovie(movie[0]))
     } catch (err) {
       console.log(err.response.data);
     }
   }
+}
+
+export const fetchSimilarMovies = (id) => {
+  return async (dispatch) => {
+    try {
+      const { data: movies } = await axios({
+        url: `${baseUrl}/movie/${id}/similar?api_key=${apiKey}`
+      })
+      dispatch(addSimilarMovies(movies.results));
+    } catch (err) {
+      console.log(err.response.data);
+    }
+  } 
 }
