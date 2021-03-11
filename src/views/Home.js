@@ -1,16 +1,36 @@
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, BackHandler, Alert } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useDispatch, useSelector } from 'react-redux'
 import MovieCard from '../components/MovieCard'
-import { fetchMoreMovies, fetchMovies } from '../store/actions/movie'
+import { fetchMovies } from '../store/actions/movie'
 
 export default ({ navigation }) => {
   const { movies } = useSelector(state => state.movie)
   const dispatch = useDispatch()
+
   useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Exit", "Are you sure you want to exit?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() }
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
     dispatch(fetchMovies())
+
+    return () => backHandler.remove();
   }, [])
 
   const handleScroll = () => {
@@ -19,7 +39,7 @@ export default ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Movies</Text>
+      <Text style={styles.title}>Movies</Text>
       <FlatList 
         onEndReached={() => handleScroll()}
         onEndReachedThreshold={0.1}
@@ -43,5 +63,10 @@ const styles = StyleSheet.create({
     margin: 0,
     padding: 0,
     borderRadius: 5
+  },
+  title: {
+    marginVertical: 10,
+    fontSize: 32,
+    fontWeight: 'bold'
   }
 })
