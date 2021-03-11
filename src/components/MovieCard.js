@@ -1,11 +1,15 @@
 import React from 'react'
-import { StyleSheet, Text, Image, View } from 'react-native'
+import { StyleSheet, Image } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { windowHeight, windowWidth } from '../helpers/dimention'
 
 export default ({ navigation, movie }) => {
+  const handleOnPress = () => {
+    navigation.replace('Detail', { id: movie.id })
+  }
+
   return (
-    <TouchableOpacity style={styles.card} onPress={() => navigation.push('Detail', { id: movie.id })}>
+    <TouchableOpacity style={styles.card} onPress={handleOnPress}>
       <Image 
         style={styles.img}
         source={{
