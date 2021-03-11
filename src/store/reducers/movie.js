@@ -1,7 +1,8 @@
 const initialState = {
   movies: [],
   movie: {},
-  page: 1
+  page: 1,
+  similarMovies: []
 }
 
 export const movieReducer = (state = initialState, action) => {
@@ -17,6 +18,11 @@ export const movieReducer = (state = initialState, action) => {
       return {
         ...state,
         movie: payload
+      }
+    case "ADD_SIMILAR_MOVIES":
+      return {
+        ...state,
+        similarMovies: payload
       }
     default:
       return state
